@@ -24,7 +24,7 @@ import javax.servlet.http.HttpServletResponse;
 public class Servlet1 extends HttpServlet {
     
     private static final int barisPerPage = 5;
-
+    
     /**
      * Processes requests for both HTTP
      * <code>GET</code> and
@@ -39,16 +39,43 @@ public class Servlet1 extends HttpServlet {
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
         
-        List<Siswa> listSiswa = getListSiswa();
+        String host = request.getServerName();
+        String port = String.valueOf(request.getServerPort());
+        String url = "http://"+host+":"+port+"/";
         
-        int jmlPage = listSiswa.size() / barisPerPage;
-        if (listSiswa.size() % barisPerPage > 0){
-            jmlPage = jmlPage + 1;
+        int page = 0;
+        int baris = barisPerPage;
+        List<Siswa> list = getListSiswa();
+        int jmlPage = list.size() / baris;
+        if (list.size() % baris > 0){
+            jmlPage = jmlPage +1;
         }
         
+        String stPage = request.getParameter("page");
+        if (stPage != null){
+            page= Integer.parseInt(stPage);
+        }
         
+        if (page < jmlPage){
+            page++;
+        }else if (page >= jmlPage){
+            page = 1;
+        }
         
-        RequestDispatcher view = request.getRequestDispatcher("index.jsp");
+        int start = (page-1) * baris +1;
+        int end = start + (baris-1);
+        
+        List<Siswa> listBaru = new ArrayList<Siswa>();
+        for (int i=start-1; i<end;i++){
+            if (i < list.size()){
+                listBaru.add(list.get(i));
+            }
+        }
+        
+        request.setAttribute("page", page);
+        request.setAttribute("list", listBaru);
+        
+        RequestDispatcher view = request.getRequestDispatcher("/tampil.jsp");
         view.forward(request, response);
         
     }
@@ -98,20 +125,20 @@ public class Servlet1 extends HttpServlet {
         
         List<Siswa> list = new ArrayList<>();
         
-        list.add(new Siswa("1", ""));
-        list.add(new Siswa("2", ""));
-        list.add(new Siswa("3", ""));
-        list.add(new Siswa("4", ""));
-        list.add(new Siswa("5", ""));
-        list.add(new Siswa("6", ""));
-        list.add(new Siswa("7", ""));
-        list.add(new Siswa("8", ""));
-        list.add(new Siswa("9", ""));
-        list.add(new Siswa("10", ""));
-        list.add(new Siswa("11", ""));
-        list.add(new Siswa("12", ""));
-        list.add(new Siswa("13", ""));
-        list.add(new Siswa("14", ""));
+        list.add(new Siswa("1", "Satu"));
+        list.add(new Siswa("2", "Dua"));
+        list.add(new Siswa("3", "Tiga"));
+        list.add(new Siswa("4", "Empat"));
+        list.add(new Siswa("5", "Lima"));
+        list.add(new Siswa("6", "Enam"));
+        list.add(new Siswa("7", "Tujuh"));
+        list.add(new Siswa("8", "Delapan"));
+        list.add(new Siswa("9", "Sembilan"));
+        list.add(new Siswa("10", "Sepuluh"));
+        list.add(new Siswa("11", "Sebelas"));
+        list.add(new Siswa("12", "Dua Belas"));
+        list.add(new Siswa("13", "Tiga Belas"));
+        list.add(new Siswa("14", "Empat Belas"));
         
         return list;
     }
